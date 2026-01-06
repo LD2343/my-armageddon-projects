@@ -1,9 +1,8 @@
 #!/bin/bash
 dnf update -y
 dnf install -y python3-pip
-pip3 install flask pymysql boto3
 dnf install -y mariadb105
-
+pip3 install flask pymysql boto3
 
 mkdir -p /opt/rdsapp
 cat >/opt/rdsapp/app.py <<'PY'
@@ -14,7 +13,7 @@ import pymysql
 from flask import Flask, request
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
-SECRET_ID = os.environ.get("SECRET_ID", "lab/rds/mysql")
+SECRET_ID = os.environ.get("SECRET_ID", "bos/rds/mysql")
 
 secrets = boto3.client("secretsmanager", region_name=REGION)
 
@@ -104,7 +103,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/opt/rdsapp
-Environment=SECRET_ID=lab/rds/mysql
+Environment=SECRET_ID=bos/rds/mysql
 ExecStart=/usr/bin/python3 /opt/rdsapp/app.py
 Restart=always
 

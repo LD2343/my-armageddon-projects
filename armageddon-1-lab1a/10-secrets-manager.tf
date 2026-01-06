@@ -4,7 +4,7 @@
 
 # Explanation: Parameter Store is bos’s map—endpoints and config live here for fast recovery.
 resource "aws_ssm_parameter" "bos_db_endpoint_param" {
-  name  = "/lab/db/endpoint"
+  name  = "/bos/db/endpoint"
   type  = "String"
   value = aws_db_instance.bos_rds01.address
 
@@ -15,7 +15,7 @@ resource "aws_ssm_parameter" "bos_db_endpoint_param" {
 
 # Explanation: Ports are boring, but even Wookiees need to know which door number to kick in.
 resource "aws_ssm_parameter" "bos_db_port_param" {
-  name  = "/lab/db/port"
+  name  = "/bos/db/port"
   type  = "String"
   value = tostring(aws_db_instance.bos_rds01.port)
 
@@ -26,7 +26,7 @@ resource "aws_ssm_parameter" "bos_db_port_param" {
 
 # Explanation: DB name is the label on the crate—without it, you’re rummaging in the dark.
 resource "aws_ssm_parameter" "bos_db_name_param" {
-  name  = "/lab/db/name"
+  name  = "/bos/db/name"
   type  = "String"
   value = var.db_name
 

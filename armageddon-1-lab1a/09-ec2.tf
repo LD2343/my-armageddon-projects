@@ -51,7 +51,7 @@ resource "aws_instance" "bos_ec201" {
   subnet_id              = aws_subnet.bos_public_subnets[0].id
   vpc_security_group_ids = [aws_security_group.bos_ec2_sg01.id]
   iam_instance_profile   = aws_iam_instance_profile.bos_instance_profile01.name
-  user_data = file("1a_user_data.sh")
+  user_data = file("00b_user_data.sh")
 
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
   # user_data = file("${path.module}/user_data.sh")
