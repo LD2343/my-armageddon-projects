@@ -1,4 +1,4 @@
-# meeting #1 - my-armageddon-project-1
+c# meeting #1 - my-armageddon-project-1
 ### Group Leader: Omar Fleming
 ### Team Leader: Larry Harris
 ### Date: 01-04-25 (Sunday)
@@ -71,11 +71,23 @@ ______
 
 - Review meeting 1
 - make sure everyone has their github setup
-- ### ERROR notice!!!
+
+----
+### Fixes
+- #### ERROR notice!!!
     - note - recursive error when you re-upload this build you will get an error:
     - "You can't create this secret because a secret with this name is already scheduled for deletion." AWS keeps the secret by default for 30 days after you destroy. Therefore run this code to delete now after each terraform destroy
 >aws secretsmanager delete-secret --secret-id bos/rds/mysql --force-delete-without-recovery
 
+- #### changes from week 1 files:
+  - variables.tf - line 40 verify the correct AMI #
+  - variables.tf - line 46 verfify if you are using T2.micro or T3.micro
+  - variables.tf - line 83 use your email
+  - delete providers.tf because it is duplicated in the auth.tf 
+  - output.tf - line command out the the last two blocks (line 22-27)
+  - JSON file - replace the AWS account with your personal 12 digit AWS account#
+
+---------
 ### Deliverables
 - go through the [expected lab 1a deliverables](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1a_explanation.md). Starting at #4 on the 1a_explanation.md in Theo's armageddon.
 
@@ -192,3 +204,6 @@ sc<sup>14</sup>![14](./screen-captures/14.png)
     B. What port does MySQL use?  
     C. Why is Secrets Manager better than storing creds in code/user-data?
 
+
+
+notes from
