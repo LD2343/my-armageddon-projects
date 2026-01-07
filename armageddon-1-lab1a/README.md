@@ -113,7 +113,7 @@ My flow query
 
  - user -> the internet gateway attached to the VPC to the EC2 inside an AZ us-east-1a inside a Public Subnet, the EC2 has IAM roles attached, also, the EC2 in the public subnet -> SNS inside the Region US East 1 to the email Alert system administered by the SNS outside the Region east 1, also, the EC2 -> to the VPC endpoint -> secrets manager inside region US East 1 but outside of the AZ of us-east-1a, -> RDS inside the Private subnet inside us-east-1a -> Nat Gateway to the internet gateway to the user
 
-Verified conceptual
+Verified flow concept
 
 1. User request is initiated from the internet.
 2. The request passes through the Internet Gateway (IGW) attached to the VPC.
