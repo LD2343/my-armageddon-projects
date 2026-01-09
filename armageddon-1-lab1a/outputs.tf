@@ -19,10 +19,10 @@ output "bos_rds_endpoint" {
   value = aws_db_instance.bos_rds01.address
 }
 
-# output "bos_sns_topic_arn" {
-#   value = aws_sns_topic.bos_sns_topic01.arn
-# }
+output "bos_sns_topic_arn" {
+  value = aws_sns_topic.bos_sns_topic01.arn
+}
 
-# output "bos_log_group_name" {
-#   value = aws_cloudwatch_log_group.bos_log_group01.name
-# }
+output "bos_log_group_name" {
+  value = aws_cloudwatch_log_group.bos_log_group01.name
+}

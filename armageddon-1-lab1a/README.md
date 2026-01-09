@@ -351,4 +351,36 @@ resource "aws_iam_role_policy" "bos_ec2_secrets_access" {
 
 # Lab 1a complete!
 
+-----
 
+# Lab 1b
+01-08-25 
+quick meeting with Larry with some updates for Lab 1b
+
+### Add files:
+  
+- ### lambda_ir_reporter.zip
+  - the zip will run on initializing
+----
+- ### lambda (folder)
+  - copy and add the two files from the Lambda folder in Larry's repo
+    1. claude.py
+    2. handler.py
+----
+- ### 1a_user_data.sh 
+  - replaced current contents with Larry's
+----
+- ### bedrock_autoreport.tf
+----
+- ### cloudwatch.tf folder copy and past code from Larry
+----
+- ### go to output.tf file
+  - un Toggle Line Comment last 2 output blocks
+----
+- ### sns_topic.tf 
+  - copy from Larry's repo
+----
+
+
+****** note: will start testing tomorrow, and going through familiarizng myself with the deliverables. 
+- when I see lab in the commands I have to change to bos_ec01
