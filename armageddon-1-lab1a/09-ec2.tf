@@ -22,12 +22,6 @@ resource "aws_iam_role_policy_attachment" "bos_ec2_ssm_attach" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# Explanation: EC2 must read secrets/params during recovery—give it access (students should scope it down).
-# resource "aws_iam_role_policy_attachment" "bos_ec2_secrets_attach" {
-#   role       = aws_iam_role.bos_ec2_role01.name
-#   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite" # TODO: student replaces w/ least privilege
-# }
-
 resource "aws_iam_role_policy" "bos_ec2_secrets_access" {
   name = "secrets-manager-bos-rds"
   role = aws_iam_role.bos_ec2_role01.id
