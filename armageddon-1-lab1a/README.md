@@ -743,8 +743,6 @@ Expected: No new errors
 sc<sup>37</sup>![37](./screen-captures/37.png)
 
 -----
-
-
 ----
 
 # meeting #5 - my-armageddon-project-1
@@ -797,16 +795,118 @@ We received this email because Amazon CloudWatch Alarm "bos-db-connection-failur
 |||
 |||
 |STATE CHANGE: |INSUFFICIENT_DATA -> OK|
-|Reason for State Change: |*Corrected the password.git *|
+|Reason for State Change: | *Corrected the password.git*|
 |Date/Time of Incident |Sunday 11, January, 2026 / 22:03:38 (UTC)|
 
-A comprehensive investigation determined that the AWS Secrets Manager password had been modified without authorization. The password has since been restored to its correct value. To prevent a recurrence we will review and refine IAM policies to ensure adherence to the principle of least privilege.
+A comprehensive investigation determined the AWS Secrets Manager password had been modified without authorization. The password has since been restored to its correct value. To prevent a recurrence we will review and refine IAM policies to ensure adherence to the principle of least privilege.
 
 The following actions are recommended:
-- Implement multi-factor authentication (MFA) to provide an additional layer of security, and enable AWS CloudTrail to capture and retain records of all API calls and user activity.
-- Reduce mean time to resolution (MTTR) by deploying Amazon CloudWatch Synthetics canaries to continuously monitor critical endpoints and APIs.
+1. Implement multi-factor authentication (MFA) to provide an additional layer of security, and enable AWS CloudTrail to capture and retain records of all API calls and user activity.
+2. Reduce mean time to resolution (MTTR) by deploying Amazon CloudWatch Synthetic's canaries to continuously monitor critical endpoints and APIs.
 
 ----
 
+# Lab 1c
+
+----
+
+# meeting #5 - my-armageddon-project-1
+### Group Leader: Omar Fleming
+### Team Leader: Larry Harris
+### Date: 01-13-25 (Sunday)
+### Time: 8:00pm - 8:30pm est. in class
+### Time: 8:30pm -  pm est. with group
+
+---------
+
+### Members present: 
+- Larry Harris
+- Dennis Shaw
+- Bryce Williams
+- David McKenzie
+- LT (Logan T)
+- Ted Clayton
+- Torray
+- Jay Mallard
+
+---------
+
+### In today's meeting:
+- general discussion about discovering breakage and how things are resolved in the real world
+- For our next meeting let's all set up our own Domains in next meeting
+
+-----------
+
+# Student verification (CLI) for Bonus-A
+----
+### 1. Prove EC2 is private (no public IP)
+run this code, replace instance ID
+- my personal ID: ids i-06597b6baa04cddde
+
+ >>> aws ec2 describe-instances \
+  --instance-ids <INSTANCE_ID> \
+  --query "Reservations[].Instances[].PublicIpAddress"
+
+Expected: 
+- null
+
+sc<sup>38</sup>![38](./screen-captures/38.png)
+
+----
+
+### 2. Prove VPC endpoints exist
+- ad vpc id / my personal ID: vpc-0cd7e9e21449091af
+
+sc<sup>39</sup>![39](./screen-captures/39.png)
+
+>>>aws ec2 describe-vpc-endpoints \
+  --filters "Name=vpc-id,Values=<VPC_ID>" \
+  --query "VpcEndpoints[].ServiceName"
+
+Expected: list includes:
+- ssm 
+- ec2messages 
+- ssmmessages 
+- logs 
+- secretsmanager
+- s3
+
+sc<sup>40</sup>![40](./screen-captures/40.png)
+
+----
+
+### 3. Prove Session Manager path works (no SSH)
 
 
+sc<sup>41</sup>![41](./screen-captures/41.png)
+
+sc<sup>42</sup>![42](./screen-captures/42.png)
+
+>>>aws ssm describe-instance-information \
+  --query "InstanceInformationList[].InstanceId"
+
+Expected: 
+- your private EC2 
+- instance ID appears
+
+### 4. Prove the instance can read both config stores
+
+- Run from SSM session:
+- change secret-id name (AWS Secrets manager > Secrets): bos/rds/mysql
+
+>>>aws ssm get-parameter --name /lab/db/endpoint
+
+sc<sup>43</sup>![43](./screen-captures/43.png)
+  
+>>>aws secretsmanager get-secret-value --secret-id <your-secret-name>
+
+sc<sup>44</sup>![44](./screen-captures/44.png)
+
+### 5. Prove CloudWatch logs delivery path is available via endpoint
+
+ - change < prefix > to bos in the following code
+  
+>>>aws logs describe-log-streams \
+    --log-group-name /aws/ec2/<prefix>-rds-app
+
+sc<sup>45</sup>![45](./screen-captures/45.png)

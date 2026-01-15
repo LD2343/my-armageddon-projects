@@ -25,7 +25,6 @@ resource "aws_iam_role_policy_attachment" "bos_ec2_ssm_attach" {
 resource "aws_iam_role_policy" "bos_ec2_secrets_access" {
   name = "secrets-manager-bos-rds"
   role = aws_iam_role.bos_ec2_role01.id
-
   policy = file("${path.module}/00a_inline_policy.json")
 }
 
@@ -46,18 +45,39 @@ resource "aws_iam_instance_profile" "bos_instance_profile01" {
 ############################################
 
 # Explanation: This is your “Han Solo box”—it talks to RDS and complains loudly when the DB is down.
-resource "aws_instance" "bos_ec201" {
-  ami                    = var.ec2_ami_id
+# resource "aws_instance" "bos_ec201" {
+#   ami                    = var.ec2_ami_id
+#   instance_type          = var.ec2_instance_type
+#   subnet_id              = aws_subnet.bos_public_subnets[0].id
+#   vpc_security_group_ids = [aws_security_group.bos_ec2_sg01.id]
+#   iam_instance_profile   = aws_iam_instance_profile.bos_instance_profile01.name
+#   user_data = file("00b_user_data.sh")
+
+#   # TODO: student supplies user_data to install app + CW agent + configure log shipping
+#   # user_data = file("${path.module}/user_data.sh")
+
+#   tags = {
+#     Name = "${local.name_prefix}-ec201"
+#   }
+# }
+
+############################################
+# Move EC2 into PRIVATE subnet (no public IP)
+############################################
+
+# Explanation: bos hates exposure—private subnets keep your compute off the public holonet.
+resource "aws_instance" "bos_ec201_private_bonus" {
+  ami                   = var.ec2_ami_id
   instance_type          = var.ec2_instance_type
-  subnet_id              = aws_subnet.bos_public_subnets[0].id
+  subnet_id              = aws_subnet.bos_private_subnets[0].id
   vpc_security_group_ids = [aws_security_group.bos_ec2_sg01.id]
   iam_instance_profile   = aws_iam_instance_profile.bos_instance_profile01.name
-  user_data = file("00b_user_data.sh")
+  user_data              = file("${path.module}/00b_user_data.sh")
 
-  # TODO: student supplies user_data to install app + CW agent + configure log shipping
-  # user_data = file("${path.module}/user_data.sh")
+  # TODO: Students should remove/disable SSH inbound rules entirely and rely on SSM.
+  # TODO: Students add user_data that installs app + CW agent; for true hard mode use a baked AMI.
 
   tags = {
-    Name = "${local.name_prefix}-ec201"
+    Name = "${local.bos_prefix}-ec201-private"
   }
 }
