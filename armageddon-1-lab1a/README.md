@@ -797,9 +797,8 @@ We received this email because Amazon CloudWatch Alarm "bos-db-connection-failur
 |||
 |||
 |STATE CHANGE: |INSUFFICIENT_DATA -> OK|
-|Reason for State Change: |*Corrected the password.**|
+|Reason for State Change: |*Corrected the password.git *|
 |Date/Time of Incident |Sunday 11, January, 2026 / 22:03:38 (UTC)|
-
 
 A comprehensive investigation determined that the AWS Secrets Manager password had been modified without authorization. The password has since been restored to its correct value. To prevent a recurrence we will review and refine IAM policies to ensure adherence to the principle of least privilege.
 
