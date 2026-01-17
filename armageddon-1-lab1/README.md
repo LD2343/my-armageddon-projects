@@ -949,12 +949,12 @@ https://github.com/DennistonShaw/my-armageddon-projects.git
 
 EC2 runs app on the target port They must ensure their user-data/app listens on port 80 (or update TG/SG accordingly).
 
-Verification commands (CLI) for Bonus-B
+### Verification commands (CLI) for Bonus-B
 
 - TG_ARN: arn:aws:elasticloadbalancing:us-east-1:497589205696:targetgroup/bos-tg01/812bef88c0b73425
 - ALB_ARN: arn:aws:elasticloadbalancing:us-east-1:497589205696:loadbalancer/app/bos-alb01/ee93a8ab2e4bf2e9
 
-1. ALB exists and is active
+### 1. ALB exists and is active
 
 >>>aws elbv2 describe-load-balancers
 --names bos-alb01
@@ -962,7 +962,7 @@ Verification commands (CLI) for Bonus-B
 
 sc<sup>50</sup>![50](./screen-captures/50.png)
 
-2. HTTPS listener exists on 443
+### 2. HTTPS listener exists on 443
 
 >>>aws elbv2 describe-listeners
 --load-balancer-arn <ALB_ARN>
@@ -970,7 +970,7 @@ sc<sup>50</sup>![50](./screen-captures/50.png)
 
 !!!!!!!!!!!!!need Domain for this
 
-3. Target is healthy
+### 3. Target is healthy
 
 >>>aws elbv2 describe-target-health
 --target-group-arn <TG_ARN>
@@ -978,21 +978,21 @@ sc<sup>50</sup>![50](./screen-captures/50.png)
 !!!!!!!!!!!!!!!!!!!!need Domain for this
 sc<sup>51</sup>![51](./screen-captures/51.png)
 
-4. WAF attached
+### 4. WAF attached
 
 >>>aws wafv2 get-web-acl-for-resource
 --resource-arn <ALB_ARN>
 
 sc<sup>52</sup>![52](./screen-captures/52.png)
 
-5. Alarm created (ALB 5xx)
+### 5. Alarm created (ALB 5xx)
 
 >>>aws cloudwatch describe-alarms
 --alarm-name-prefix bos-alb-5xx
 
 sc<sup>53</sup>![53](./screen-captures/53.png)
 
-6. Dashboard exists
+### 6. Dashboard exists
 
 >>>aws cloudwatch list-dashboards
 --dashboard-name-prefix bos
