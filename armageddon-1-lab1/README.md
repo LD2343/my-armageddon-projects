@@ -602,7 +602,6 @@ my personal ARN:
 - confirm in your email that you have subscribed
   
 sc<sup>28-1</sup>![28-1](./screen-captures/28-1.png)
-
 ----
 
 If you are having an issue subscribing to the SNS because it automatically unsubscribes then:
@@ -998,3 +997,228 @@ sc<sup>53</sup>![53](./screen-captures/53.png)
 --dashboard-name-prefix bos
 
 sc<sup>54</sup>![54](./screen-captures/54.png)
+
+----
+----
+
+# meeting #5 - my-armageddon-project-1
+### Group Leader: Omar Fleming
+### Team Leader: Larry Harris
+### Date: 01-17-25 (Saturday)
+### Time: 2:00pm - 2:30pm est. in class
+### Time: 2:30pm -  pm est. with group
+
+---------
+
+### Members present: 
+- Larry Harris
+- Dennis Shaw
+- Bryce Williams
+- Kelly D Moore
+- Ted Clayton
+- Logan (LT) 
+- David Mckenzie
+- Torray
+- Zeek-Miller314
+- Jasper Shivers (Jdollas)
+---------
+
+## In Class
+
+**** deadline for Class 7 Armageddon submissions: 2/3/26 ****
+
+Armageddon repo: https://github.com/BalericaAI/armageddon/tree/main/SEIR_Foundations
+
+Class 7 must do:
+- Lab 1, all the way to bonus F 
+- Lab 2, all the way to be BAM B 
+- Lab 3a and 3b
+* the further you go in the labs, the more work ready you become
+----
+
+Question and Answer with Theo:
+
+Bryce Williams issue: 
+- if the script gives you the answer that you need but not the validation its ok
+
+Larry Harris: Understanding Lab 1c bonus f:
+- follow the instructions as close as we can
+- access logs are in s3
+- modify terraform but make sure bucket stays persistant
+- s3 bucket has to be global and unique name. so claim your bucket and makes sure it doesn't delete. use consol after the bucket is created in Terraform
+
+- route 53 should be perminent don't keep destroying
+
+----
+
+## In meeting
+Create our Domain
+In console Go to Route 53:
+- switch over to free tier
+- go to register domains > upgrade your plan > upgrade > continue (sucess)
+- go to Route 53 > register domain
+- check if name exists and choose name > proceed to checkout
+- You can choose to turn off Auto-renew then Next
+- 
+sc<sup>55</sup>![55](./screen-captures/55.png)
+
+sc<sup>56</sup>![56](./screen-captures/56.png)
+
+sc<sup>57</sup>![57](./screen-captures/57.png)
+
+- fill in personal information > next
+
+sc<sup>58</sup>![58](./screen-captures/58.png)
+
+- review info, check I have read... > submit
+- it will take several minutes 
+- check your email... if you are denied follow the link in the email and make a report to aws and explain the problem and wait for an answer
+
+sc<sup>59</sup>![59](./screen-captures/59.png)
+sc<sup>60</sup>![60](./screen-captures/60.png)
+sc<sup>61</sup>![61](./screen-captures/61.png)
+
+- go through the submission process and they will respond within 24hrs
+
+sc<sup>62</sup>![58](./screen-captures/62.png)
+
+----
+# Beyond this point we need our Domain. The notes are here to execute the deliverables if you have yours. I will continue notes tomorrow after receiving my Domain.
+
+# [# Lab 1c bonus c](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1c_bonus-C.md)
+  
+Student verification (CLI)
+1) Confirm hosted zone exists (if managed)
+  >>>aws route53 list-hosted-zones-by-name \
+    --dns-name chewbacca-growl.com \
+    --query "HostedZones[].Id"
+
+1) Confirm app record exists
+  >>>aws route53 list-resource-record-sets \
+  --hosted-zone-id <ZONE_ID> \
+  --query "ResourceRecordSets[?Name=='app.chewbacca-growl.com.']"
+
+1) Confirm certificate issued
+  >>>aws acm describe-certificate \
+  --certificate-arn <CERT_ARN> \
+  --query "Certificate.Status"
+
+Expected: ISSUED
+
+4) Confirm HTTPS works
+  >>>curl -I https://app.chewbacca-growl.com
+
+Expected: HTTP/1.1 200 (or 301 then 200 depending on your app)
+
+----
+
+# Lab 1c bonus d
+
+[Student verification (CLI) — DNS + Logs](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1c_bonus-D.md?plain=1)
+
+1) Verify apex record exists
+  >>>aws route53 list-resource-record-sets \
+    --hosted-zone-id <ZONE_ID> \
+    --query "ResourceRecordSets[?Name=='chewbacca-growl.com.']"
+
+2) Verify ALB logging is enabled
+  >>>aws elbv2 describe-load-balancers \
+    --names chewbacca-alb01 \
+    --query "LoadBalancers[0].LoadBalancerArn"
+
+Then:
+  >>>aws elbv2 describe-load-balancer-attributes \
+  --load-balancer-arn <ALB_ARN>
+
+  Expected attributes include:
+  access_logs.s3.enabled = true
+  access_logs.s3.bucket = your bucket
+  access_logs.s3.prefix = your prefix
+
+3) Generate some traffic  
+  
+- there is a problem with the first curl code option (why its striked out) just run the second one
+
+ >>>~~curl -I https://chewbacca-growl.com~~
+
+  >>>curl -I https://app.chewbacca-growl.com
+
+1) Verify logs arrived in S3 (may take a few minutes)
+  aws s3 ls s3://<BUCKET_NAME>/<PREFIX>/AWSLogs/<ACCOUNT_ID>/elasticloadbalancing/ --recursive | head
+
+
+Why this matters to YOU (career-critical point)
+This is incident response fuel:
+  Access logs tell you:
+    client IPs
+    paths
+    response codes
+    target behavior
+    latency
+
+Combined with WAF logs/metrics and ALB 5xx alarms, you can do real triage:
+  “Is it attackers, misroutes, or downstream failure?”
+
+----
+
+# [# Lab 1c bonus e](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1c_bonus-E.md)
+
+4) Student verification (CLI)
+### A) Confirm WAF logging is enabled (authoritative)
+  >>>aws wafv2 get-logging-configuration \
+    --resource-arn <WEB_ACL_ARN>
+
+Expected: LogDestinationConfigs contains exactly one destination.
+
+### B) Generate traffic (hits + blocks)
+  >>>curl -I https://chewbacca-growl.com/
+
+  >>>curl -I https://app.chewbacca-growl.com/
+
+### C1) If CloudWatch Logs destination
+  >>>aws logs describe-log-streams \
+  --log-group-name aws-waf-logs-<project>-webacl01 \
+  --order-by LastEventTime --descending
+
+Then pull recent events:
+  >>>aws logs filter-log-events \
+  --log-group-name aws-waf-logs-<project>-webacl01 \
+  --max-items 20
+
+### C2) If S3 destination
+  aws s3 ls s3://aws-waf-logs-<project>-<account_id>/ --recursive | head
+
+### C3) If Firehose destination
+  >>>aws firehose describe-delivery-stream \
+  --delivery-stream-name aws-waf-logs-<project>-firehose01 \
+  --query "DeliveryStreamDescription.DeliveryStreamStatus"
+
+- And confirm objects land:
+  
+>>>aws s3 ls s3://<firehose_dest_bucket>/waf-logs/ --recursive | head
+
+1) Why this makes incident response “real”
+Now you can answer questions like:
+  “Are 5xx caused by attackers or backend failure?”
+  “Do we see WAF blocks spike before ALB 5xx?”
+  “What paths / IPs are hammering the app?”
+  “Is it one client, one ASN, one country, or broad?”
+  “Did WAF mitigate, or are we failing downstream?”
+----
+
+# [# Lab 1c bonus f](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1c_bonus-F.md)
+
+#### note: before starting bonus f
+
+1. **Problem:** We don't want to delete the s3 bucket when we terraform destroy  
+**Solution:** We will add a lifecycle to the s3 bucket to protect the resource from destroying
+- comment out the s3 bucket from the terraform build
+- use this code to erase the s3 bucket from the state.file 
+>>>terraform state rm aws_s3_bucket.bos_alb_logs
+
+
+2. **Problem:** We don't want to delet the Route 53 when we terraform destroy  
+**Solution:** 
+
+
+----
