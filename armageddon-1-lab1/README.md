@@ -103,7 +103,7 @@ Availability Zone
 
 #### Architectural Design 
 
-Theo's outline
+[Theo's outline](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1a_explanation.md)
 
 - showing the logical flow 
   - A user sends an HTTP request to an EC2 instance
@@ -381,13 +381,9 @@ resource "aws_iam_role_policy" "bos_ec2_secrets_access" {
 - go over all deliverables so that everyone can take screenshots
 
 ----------
-
-# Lab 1a complete!
-
-----------
 ----------
 
-# Lab 1b
+# [Lab 1b](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1b_lab.md)
 01-08-25 
 quick meeting with Larry with some updates for Lab 1b
 
@@ -443,10 +439,8 @@ caught up more members
 
 ------
 
-# Final Check for lab 1a:
+# [Final Check for lab 1a:](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1a_final_check.txt)
 Saturday 01-10-25
-re:
-- https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1a_final_check.txt
 
 1) From your local Terminal we are changing permissions for the following files to run (metadata checks; role attach + secret exists)
 
@@ -809,10 +803,6 @@ The following actions are recommended:
 
 ----
 
-# Lab 1c
-
-----
-
 # meeting #6 - my-armageddon-project-1
 ### Group Leader: Omar Fleming
 ### Team Leader: Larry Harris
@@ -839,10 +829,15 @@ The following actions are recommended:
 - For our next meeting let's all set up our own Domains in next meeting
 
 -----------
+# [Lab 1c](https://github.com/DennistonShaw/armageddon/tree/main/SEIR_Foundations/LAB1/1c_terrraform)
+
+- in 1c_terraform folder go through and add .tf folders/script
+----
 
 # [Student verification (CLI) for Bonus-A](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1c_bonus-A.txt)
-----
+
 ### 1. Prove EC2 is private (no public IP)
+
 run this code, replace instance ID
 - my personal ID: ids i-06597b6baa04cddde
 
@@ -1051,39 +1046,37 @@ Larry Harris: Understanding Lab 1c bonus f:
 
 ----
 
-## In meeting
-Create our Domain
-In console Go to Route 53:
-- switch over to free tier
-- go to register domains > upgrade your plan > upgrade > continue (sucess)
-- go to Route 53 > register domain
-- check if name exists and choose name > proceed to checkout
-- You can choose to turn off Auto-renew then Next
-- 
-sc<sup>55</sup>![55](./screen-captures/55.png)
+#### personal note: 
+- I upgraded my aws account to be able to obtain a domain
+- after first being unable to create a domain I contacted aws support and after 2 days they reset my account enabling me to obtain a domain.
+  
+sc<sup>55-1</sup>![55-1](./screen-captures/55-1.png)
 
-sc<sup>56</sup>![56](./screen-captures/56.png)
+sc<sup>55-2</sup>![55-2](./screen-captures/55-2.png)
 
-sc<sup>57</sup>![57](./screen-captures/57.png)
+- register domain
+  
+sc<sup>55-3-1</sup>![55-3-1](./screen-captures/55-3-1.png)
 
-- fill in personal information > next
+- you will receive another verification email for you email address. If you don't see it, check your spam folder (that's where I found mine) 
 
-sc<sup>58</sup>![58](./screen-captures/58.png)
 
-- review info, check I have read... > submit
-- it will take several minutes 
-- check your email... if you are denied follow the link in the email and make a report to aws and explain the problem and wait for an answer
 
-sc<sup>59</sup>![59](./screen-captures/59.png)
-sc<sup>60</sup>![60](./screen-captures/60.png)
-sc<sup>61</sup>![61](./screen-captures/61.png)
+create Hosted Zone
 
-- go through the submission process and they will respond within 24hrs
+sc<sup>55-3</sup>![55-3](./screen-captures/55-3.png)
 
-sc<sup>62</sup>![58](./screen-captures/62.png)
+sc<sup>55-4</sup>![55-3](./screen-captures/55-4.png)
+
+- go to certificates manager > request certificate > request public certificate
+- fill in domain names > click request
+- will take a 30min - 90min
+- create records in Route 53
+
+sc<sup>55-4</sup>![55-5](./screen-captures/55-5.png)
 
 ----
-# Beyond this point we need our Domain. The notes are here to execute the deliverables if you have yours. I will continue notes tomorrow after receiving my Domain.
+# Beyond this point you need a Domain and certificates to execute the deliverables 
 
 # [Lab 1c bonus c](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB1/1c_bonus-C.md)
   
@@ -1229,8 +1222,8 @@ helpful content: [Analyzing AWS WAF logs: Leveraging CloudWatch Log Insights](ht
 ### Group Leader: Omar Fleming
 ### Team Leader: Larry Harris
 ### Date: 01-18-25 (Sunday)
-### Time: 2:00pm - 2:30pm est. in class
-### Time: 2:30pm -  pm est. with group
+### Time: 2:00pm - 3:00pm est. in class
+### Time: 3:00pm -  pm est. with group
 
 ---------
 
@@ -1242,12 +1235,14 @@ helpful content: [Analyzing AWS WAF logs: Leveraging CloudWatch Log Insights](ht
 - Ted Clayton
 - Logan (LT)
 - David McKenzie
+- Jasper Shivers (Jdollas)
 
 --------
 
 ## In Class
-
-
+- working mostly individually
+- touble shooting
+- completing bonus f
 
 
 -------
