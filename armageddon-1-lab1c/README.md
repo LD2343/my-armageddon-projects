@@ -1275,5 +1275,196 @@ sc<sup>53-4</sup>![53-4](./screen-captures/53-4.png)
 
 helpful content: [Analyzing AWS WAF logs: Leveraging CloudWatch Log Insights](https://aws.amazon.com/ar/video/watch/b117e232382/)
 
+Go to the consol > cloudwatch > Log Insights
+
+In Query definition > query scope > select up to 50 log groups (dropdown) > select the first and last option
+
+sc<sup>54-1</sup>![54-1](./screen-captures/54-1.png)
+
+#### Requirements: 
+- Set the time range to Last 15 minutes (or match incident window).
+
+sc<sup>54-2</sup>![54-2](./screen-captures/54-2.png)
+
+## A) WAF Queries (CloudWatch Logs Insights)
+
+A1) “What’s happening right now?” (Top actions: ALLOW/BLOCK)
+- copy and past query
+
+>>>fields @timestamp, action
+| stats count() as hits by action
+| sort hits desc
+
+sc<sup>54-3</sup>![54-3](./screen-captures/54-3.png)
+
+- Run query
+
+sc<sup>54-4</sup>![54-4](./screen-captures/54-4.png)
+
+A2) Top client IPs (who is hitting us the most?)
+>>>fields @timestamp, httpRequest.clientIp as clientIp
+| stats count() as hits by clientIp
+| sort hits desc
+| limit 25
+
+sc<sup>54-5</sup>![54-5](./screen-captures/54-5.png)
+
+A3) Top requested URIs (what are they trying to reach?)
+>>>fields @timestamp, httpRequest.uri as uri
+| stats count() as hits by uri
+| sort hits desc
+| limit 25
+
+sc<sup>54-6</sup>![54-6](./screen-captures/54-6.png)
+
+A4) Blocked requests only (who/what is being blocked?)
+>>>fields @timestamp, action, httpRequest.clientIp as clientIp, httpRequest.uri as uri
+| filter action = "BLOCK"
+| stats count() as blocks by clientIp, uri
+| sort blocks desc
+| limit 25
+
+sc<sup>54-7</sup>![54-7](./screen-captures/54-7.png)
+
+to set up clould Athena sql query:
+go to Amazon Athena > Query Settings > manage > Browse S3 > Choose S3 data set > click choose > enter AWS account ID > click save
+
+sc<sup>54-8</sup>![54-8](./screen-captures/54-8.png)
+
+A5) Which WAF rule is doing the blocking?
+>>>fields @timestamp, action, terminatingRuleId, terminatingRuleType
+| filter action = "BLOCK"
+| stats count() as blocks by terminatingRuleId, terminatingRuleType
+| sort blocks desc
+| limit 25
+
+sc<sup>54-9</sup>![54-9](./screen-captures/54-9.png)
+
+A6) Rate of blocks over time (did it spike?)
+>>>fields @timestamp, httpRequest.clientIp as clientIp, httpRequest.uri as uri
+| filter uri like /wp-login|xmlrpc|\.env|admin|phpmyadmin|\.git|\/login/
+| stats count() as hits by clientIp, uri
+| sort hits desc
+| limit 50
+
+sc<sup>54-10</sup>![54-10](./screen-captures/54-10.png)
+
+#edit
+fields @timestamp, httpRequest.clientIp as clientIp, httpRequest.uri 
+
+A7) Suspicious scanners (common patterns: admin paths, wp-login, etc.)
+>>>fields @timestamp, httpRequest.clientIp as clientIp, httpRequest.uri as uri
+| filter uri like /wp-login|xmlrpc|\.env|admin|phpmyadmin|\.git|\/login/
+| stats count() as hits by clientIp, uri
+| sort hits desc
+| limit 50
+
+sc<sup>54-11</sup>![54-11](./screen-captures/54-11.png)
+
+A8) Country/geo (if present in your WAF logs)
+Some WAF log formats include httpRequest.country. If yours does:
+
+>>>fields @timestamp, httpRequest.country as country
+| stats count() as hits by country
+| sort hits desc
+| limit 25
+
+sc<sup>54-12</sup>![54-12](./screen-captures/54-12.png)
+
+## B) App Queries (EC2 app log group)
+
+These assume your app logs include meaningful strings like ERROR, DBConnectionErrors, timeout, etc
+(You should enforce this.)
+
+B1) Count errors over time (this should line up with the alarm window)
+
+the following code has been adjusted to work
+>>>fields @timestamp, @message
+| filter @message like /DBConnectionError|Exception|Traceback|DB|timeout|refused/
+| stats count() as errors by bin(1m)
+| sort minute asc
+
+sc<sup>54-13</sup>![54-13](./screen-captures/54-13.png)
 
 
+B2) Show the most recent DB failures (triage view)
+>>>fields @timestamp, @message
+| filter @message like /DB|mysql|timeout|refused|Access denied|could not connect/
+| sort @timestamp desc
+| limit 50
+
+sc<sup>54-14</sup>![54-14](./screen-captures/54-14.png)
+
+B3) “Is it creds or network?” 
+- classifier hints Credentials drift often shows: 
+  - Access denied, authentication failures
+- Network/SecurityGroup often shows: 
+  - timeout, refused, “no route”, hang
+
+  >>>fields @timestamp, @message
+| filter tolower(@message) like /access denied|authentication failed|timeout|refused|no route|could not connect/
+| stats count() as hits by
+  if(
+    tolower(@message) like /DBConnectionError|authentication failed/, "Creds/Auth",
+    if(
+      tolower(@message) like /timeout|no route/, "Network/Route",
+      if(
+        tolower(@message) like /refused/, "Port/SG/ServiceRefused",
+        "Other"
+      )
+    )
+  ) as category
+| sort hits desc
+
+sc<sup>54-15</sup>![54-15](./screen-captures/54-15.png)
+
+-----
+!!!!!!!!! check this
+Steps to view raw log events in the CloudWatch console:
+
+1. Steps to view raw log events in the CloudWatch console:
+2. In the navigation pane, choose Logs, then choose Log groups.
+3. From the list of log groups, choose the name of the log group you want to view.
+4. From the list of log streams, choose the name of the log stream that contains the event you are interested in.
+5. Above the list of log events, you will see display options. Choose Text to display all log events in their raw, plain text format. The default view often formats the events (e.g., as rows or collapsed JSON), so switching to "Text" will show the original log data as it was ingested. 
+-----
+
+B4) Extract structured fields (Requires log JSON)
+If you log JSON like: {"level":"ERROR","event":"db_connect_fail","reason":"timeout"}:
+
+  >>>fields @timestamp, level, event, reason
+| filter level="DBConnectionError"
+| stats count() as n by event, reason
+| sort n desc
+
+(Thou Shalt need to emit JSON logs for this one.)
+
+sc<sup>54-16</sup>![54-16](./screen-captures/54-16.png)
+
+sc<sup>54-17</sup>![54-17](./screen-captures/54-17.png)
+
+C) Correlation “Enterprise-style” mini-workflow (Runbook Section)
+Add this to the incident runbook:
+
+Step 1 — Confirm signal timing
+  CloudWatch alarm time window: last 5–15 minutes
+  Run App B1 to see error spike time bins
+
+Step 2 — Decide: Attack vs Backend Failure
+  Run WAF A1 + A6:
+    If BLOCK spikes align with incident time → likely external pressure/scanning
+    If WAF is quiet but app errors spike → likely backend (RDS/SG/creds)
+
+Step 3 — If backend failure suspected
+  Run App B2 and classify:
+    Access denied → secrets drift / wrong password
+    timeout → SG/routing/RDS down
+  Then retrieve known-good values:
+    Parameter Store /lab/db/*
+    Secrets Manager /<prefix>/rds/mysql
+
+Step 4 — Verify recovery
+  App errors return to baseline (B1)
+  WAF blocks stabilize (A6)
+  Alarm returns to OK
+  curl https://app.chewbacca-growl.com/list works
