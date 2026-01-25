@@ -1584,11 +1584,9 @@ Look for:
 
   If Age never appears/increases, caching isn’t working (or TTL is 0 / headers prevent caching).
 
-sc<sup>57-1</sup>![57-1](./screen-captures/57-1.png)
+sc<sup>57-1</sup>![57-1-and-2](./screen-captures/57-1-and-2.png)
 
-sc<sup>57-2</sup>![57-2](./screen-captures/57-2.png)
-
-2) API must NOT cache unsafe output
+1) API must NOT cache unsafe output
 Run twice:
   >>>curl -I https://southrakkasmedia.com/api/list
 
@@ -1598,6 +1596,7 @@ Expected for “safe default” API behavior:
     Age should be absent or 0
     Responses should reflect fresh origin behavior
     If you add auth later, you must never allow one user to see another’s response
+
 
 sc<sup>57-3</sup>![57-3](./screen-captures/57-3.png)
 
