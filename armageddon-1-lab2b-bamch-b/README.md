@@ -1551,12 +1551,13 @@ Expected Deliverables
 温眼守護
 我家至宝
 
+!!!!!!!!!!!!!!!!!!!!check this again
 ### Deliverable D 
 - Technical Verification (CLI) 
-- “Correctness, not vibes”
+- — “Correctness, not vibes”
 
-**1) Static caching proof
-Run twice:**
+1) Static caching proof
+Run twice:
 
   >>>curl -I https://southrakkasmedia.com/static/example.txt
 
@@ -1568,12 +1569,10 @@ Look for:
 
   If Age never appears/increases, caching isn’t working (or TTL is 0 / headers prevent caching).
 
-sc<sup>57-1</sup>![57-1](./screen-captures/57-1.png)
+sc<sup>57-1</sup>![57-1-and-2](./screen-captures/57-1-and-2.png)
 
-sc<sup>57-2</sup>![57-2](./screen-captures/57-2.png)
-
-**2) API must NOT cache unsafe output
-Run twice:**
+1) API must NOT cache unsafe output
+Run twice:
   >>>curl -I https://southrakkasmedia.com/api/list
 
   >>>curl -I https://southrakkasmedia.com/api/list
@@ -1582,6 +1581,7 @@ Expected for “safe default” API behavior:
     Age should be absent or 0
     Responses should reflect fresh origin behavior
     If you add auth later, you must never allow one user to see another’s response
+
 
 sc<sup>57-3</sup>![57-3](./screen-captures/57-3.png)
 
@@ -1605,7 +1605,6 @@ sc<sup>57-4</sup>![57-4](./screen-captures/57-4.png)
       If it doesn’t, they accidentally cached a dynamic response.
 
 sc<sup>57-5</sup>![57-5](./screen-captures/57-5.png)
-
 
 # Lab 2b - [Be A Man Challenge A](https://github.com/DennistonShaw/armageddon/blob/main/SEIR_Foundations/LAB2/2b_Be_A_ManA.txt)
 
