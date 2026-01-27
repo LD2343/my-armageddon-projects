@@ -38,7 +38,7 @@ Availability Zone
 
 |Subnets|||
 |---|---|---|
-|Public|10.26.101.0/24|10.26.102.0/24|  
+|Public|10.26.1.0/24|10.26.2.0/24|  
 |Private|10.26.101.0/24| 10.26.102.0/24|
 
 -------
@@ -1971,8 +1971,32 @@ We invalidate CloudFront objects only when a change must be visible immediately 
 
 Lab 3 — Japan Medical Cross-Region Architecture with Legal Data Residency (APPI Compliance) Scenario Overview A Japanese medical organization operates: A primary medical data system in Tokyo A satellite medical office in São Paulo A single global application URL: chewbacca-growls.com Global access via CloudFront Strict legal requirement: All Japanese patient medical data (PHI) must remain physically stored in Japan
 
+### Project Infrastructure (Tokyo, Japan)
+VPC name  == edo_vpc01  
+  - significance of the name Edo. The Edo period (1603–1868) was critical in Japanese healthcare, marking a transition from exclusive reliance on Chinese medicine to the incorporation of Western knowledge via Rangaku (Dutch studies) and the strengthening of traditional Kampo. It established foundational medical education, a culture of public health, and a "use first, pay later" medicine system (okigusuri) that modernized access to healthcare. 
+
+Region = ap-northeast-1  
+Availability Zone
+- ap-northeaset-1a
+- ap-northeaset-1c 
+- ap-northeaset-1d
+
+CIDR == 10.81.0.0/16 
+
+|Subnets|az zone a|az zone c|az zone d|
+|---|---|---|---|
+|Public|10.81.1.0/24|10.81.2.0/24|10.81.3.0/24 
+|Private|10.26.101.0/24| 10.26.102.0/24|10.26.103.0/24
+---
+
+
 Here is my diagram draft. Please take a look and critique. Did I miss anything?
 
 sc<sup>lab3</sup>![lab 3](./screen-captures/lab3-diagram.png)
 
-This architecture uses Amazon CloudFront as a global entry point to provide low-latency access and origin failover between regions while enforcing strict data residency requirements. The primary region (ap-northeast-1, Tokyo) hosts all patient medical data in an Amazon RDS MySQL Multi-AZ deployment within private subnets, ensuring high availability and compliance with Japan’s APPI regulations by keeping PHI physically within Japan. Application workloads run on Auto Scaling Groups across multiple Availability Zones behind an Application Load Balancer, with IAM instance profiles granting secure, least-privilege access to AWS Secrets Manager, Systems Manager Parameter Store, and logging services. The satellite region (sa-east-1, São Paulo) hosts only stateless compute resources with no persistent storage, ensuring no PHI is stored or processed outside Japan while still providing regional performance and resilience. This design achieves scalability, fault tolerance, security, and legal compliance using AWS best practices.
+## Interview Talk Track (Memorize This)
+- I designed a cross-region medical system where all PHI remained in Japan to comply with APPI. Tokyo hosted the database, São Paulo ran stateless compute, and Transit Gateway provided a controlled data corridor. CloudFront delivered a single global URL without violating data residency.
+----
+
+
+
