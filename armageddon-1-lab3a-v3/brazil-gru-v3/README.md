@@ -2217,7 +2217,7 @@ note about TGW
 
 ------
 
-# Peering Regions
+# [Peering Regions](https://us-east-1.console.aws.amazon.com/vpcconsole/home?region=us-east-1#PeeringConnections)
 
 Go to Japan VPC > peering connection > create peering connection
 
@@ -2298,18 +2298,50 @@ That’s the whole lab.
 Quick verification commands (so they can prove it)
 From São Paulo EC2 (SSM session)
 
-Test network reachability to Tokyo RDS:
+---
 
-    nc -vz <tokyo-rds-endpoint> 3306
+### Test network reachability to Tokyo RDS:
+in aws SSM Manager
+
+>>>sudo dnf install nc -y
+
+get the <tokyo-rds-endpoint> here and run this code
+
+sc<sup>61-1</sup>![peering](./screen-captures/61-1.png)
+
+nc -vz \<tokyo-rds-endpoint> 3306
+
+ >>>nc -vz edo-rds01.cvw8oc42sa71.ap-northeast-1.rds.amazonaws.com 3306
+
+sc<sup>61-2</sup>![peering](./screen-captures/61-2.png)
+
+---
 
 Then app-level verification:
-  submit record in São Paulo
-  confirm it appears when calling the Tokyo region (same data, one DB)
+- submit record in São Paulo
+- confirm it appears when calling the Tokyo region (same data, one DB)
+- run this in São Paulo
+
+curl https://app.southrakkasmedia.com/init
+curl https://app.southrakkasmedia.com/add?note=test
+curl https://app.southrakkasmedia.com/list
+
+sc<sup>61-3</sup>![peering](./screen-captures/61-3.png)
 
 Confirm routes (AWS CLI)
 For each region, verify route tables include the cross-region CIDR to TGW:
 
-    aws ec2 describe-route-tables --filters "Name=vpc-id,Values=<VPC_ID>" --query "RouteTables[].Routes[]"
+(Theo's code aws ec2 describe-route-tables --filters "Name=vpc-id,Values=<VPC_ID>" --query "RouteTables[].Routes[]"
+- added region to the code
+
+1. Tokyo
+>>>aws ec2 describe-route-tables   --filters "Name=vpc-id,Values=vpc-02c82162b997bdc34"   --query 'RouteTables[].{RouteTableId: RouteTableId, Routes: Routes[]}'   --output table   --region ap-northeast-1
+
+repeat with vpc id and region for São Paulo
+
+2. São Paulo
+>>>aws ec2 describe-route-tables   --filters "Name=vpc-id,Values=vpc-0ee357b197eeb582d"   --query 'RouteTables[].{RouteTableId: RouteTableId, Routes: Routes[]}'   --output table   --region sa-east-1
+
 
 Suggested structure for the student repo
 /tokyo/ = “Lab2 + marginal TGW hub code”
