@@ -2600,7 +2600,9 @@ sc<sup>67-1</sup>![Python corridor proof](./screen-captures/67-1.png)
 
 .
 
-.
+!!!!!!change to the diagram
+
+sc<sup>lab3 diagram v6</sup>![lab 3 diagram v6](./screen-captures/lab3a-v6.png)
 
 .
 
