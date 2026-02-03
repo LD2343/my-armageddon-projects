@@ -22,7 +22,7 @@ resource "aws_acm_certificate" "cf_acm_cert01" {
 
 # Explanation: Once validated, ACM becomes the “green checkmark” — until then, ALB HTTPS won’t work.
 resource "aws_acm_certificate_validation" "cf_acm_validation01" {
-  provider = aws.useast1
+  provider        = aws.useast1
   certificate_arn = aws_acm_certificate.cf_acm_cert01.arn
 
   # # TODO: if using DNS validation, students must pass validation_record_fqdns
